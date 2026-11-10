@@ -1,29 +1,30 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'config/app_config.dart';
+import 'config/dependency_injector.dart';
 import 'screens/home_screen.dart';
 
-/// Entry point aplikasi.
-///
-/// Memuat konfigurasi dari file .env sebelum menjalankan aplikasi.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Memuat konfigurasi .env.
   await dotenv.load(fileName: '.env');
 
-  // Memeriksa konfigurasi aplikasi.
   if (!AppConfig.isConfigured()) {
-    debugPrint(
-      'Konfigurasi .env tidak lengkap. Periksa file .env Anda.',
-    );
+    debugPrint('Konfigurasi .env tidak lengkap.');
   }
 
-  runApp(const MyApp());
+  final dependencies = DependencyInjector();
+
+  runApp(
+    DependencyInjectorScope(
+      dependencies: dependencies,
+      child: const MyApp(),
+    ),
+  );
 }
 
-/// Widget utama aplikasi.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
